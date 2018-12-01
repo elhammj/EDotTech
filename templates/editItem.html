@@ -1,0 +1,30 @@
+<!-- 
+	Elham Jaffar
+	Edit Item Templates that allow the user to edit item's details
+-->
+{% extends "style.html" %}
+{% block content %}
+{% include "header.html" %}
+<!-- Flash -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+    <div class="row text-center ">
+        <span class = 'col-12 flash'> <strong> {{ message }} </strong> </span>
+    </div>
+    {% endfor %}
+   {% endif %}
+{% endwith %}
+	<form action= "{{url_for('editItem', category_id = category_id, item_id=item.id)}}" method = 'POST'>
+		<p>Name:
+		<br/>
+		<input type = 'text' size='30' name = 'name' placeholder="{{item.name}}"></p>
+		<p>Descreption:
+		<br/>
+		<textarea cols="30" rows="3" name='description' placeholder="{{item.description}}"></textarea></p>
+		<p>Price:
+		<br/>
+		<input type = 'text' size='30' name = 'price' placeholder ="{{item.price}}"></p>
+		<input class='btn btn-light' type='submit' value='Edit'>
+	</form>
+{% endblock %}

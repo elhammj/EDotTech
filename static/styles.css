@@ -1,0 +1,83 @@
+* {
+	font-family: "Helvetica Neue Bold", sans-serif;
+	font-weight: 700;
+}
+html, body {
+  height: 100%;
+}
+.loginPage{
+	color: white;
+}
+.title{
+	color: white;
+	font-weight: bold;
+}
+.header{
+	padding-right: 0px;
+	padding-left: 0px;
+	vertical-align: center;
+}
+.flash
+{
+	background-color: white;
+	color:#669999;
+	list-style: none;
+	border-radius: 35px;
+    padding: 10px 10px 10px 10px;
+}
+ul li{
+	list-style: none;
+}
+ul{
+	padding-left: 0px;
+}
+.subject{
+	font-weight: bold;
+	text-decoration: underline;
+	color: white;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+.main{
+		background-color: #635770;
+		height: 100%;
+		min-height: 100%: 
+}
+a{
+	color: #d9d2e0;
+}
+a:hover{
+	color:#b0c4c4;
+}
+.details{
+	background-color: white;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 10px;
+	margin-right: 10px;
+	padding-left: 10px;
+	padding-bottom: 20px;
+	border-radius: 15px;
+}
+
+.btnBack{
+	background-color: #635770;
+}
+.pageTitle{
+	padding-left: 20px;
+	padding-top: 20px;
+	color: white;
+	font-weight: bold;
+}
+.btn-light{
+	margin-left: 10px;
+	font-weight: bold;
+}
+form{
+	padding-left: 20px;
+}
+.deleteMsg{
+	color: white;
+	font-weight: bold;
+	padding-left: 20px;
+}

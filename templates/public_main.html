@@ -1,0 +1,44 @@
+<!-- 
+	Elham Jaffar
+	Main Templates that shows all the categories and latest items for guests
+-->
+{% extends "style.html" %}
+{% block content %}
+	<!-- Header, give login option for public users --> 
+	<div class="row" style="height: 15%; width:100%; background-color: #669999; padding-top: 2%; padding-bottom: 2%; padding-right: 0%;margin-left: 0px; margin-right: 0px;">
+		<div class="col-9">
+			<h4 class='title'>EDOTTECH SHOP!</h4>
+		</div>
+		<div class="col-3 text-right">
+			<a class='btn btn-light' href="{{url_for('showLogin')}}"> Log In </a>
+		</div>
+	</div>
+	<!-- Flash -->
+	{% with messages = get_flashed_messages() %}
+	  {% if messages %}
+	    {% for message in messages %}
+	    <div class="row text-center">
+	        <span class = 'col-12 flash'> <strong> {{ message }} </strong> </span>
+	    </div>
+	    {% endfor %}
+	    {% endif %}
+	{% endwith %}
+  	<div class='row text-center'>
+	  	<div class='col-sm-6'>
+			<h4 class='subject'> Categories </h4>
+			<ul>
+				{% for category in categories %}
+				<li><a href={{url_for('showItems',category_id=category.id)}}>{{category.name}}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+		<div class='col-sm-6'>
+			<h4 class='subject'> Latest Items </h4>
+			<ul>
+				{% for i in items %}
+				<li><a href={{url_for('showDetails',category_id=i.category_id, item_id=i.id)}}>{{i.name}}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+{% endblock %}

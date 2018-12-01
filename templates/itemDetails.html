@@ -1,0 +1,27 @@
+<!-- 
+	Elham Jaffar
+	Items Details Templates that shows all item's details
+-->
+{% extends "style.html" %}
+{% block content %}
+{% include "header.html" %}
+<!-- Flash -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+    <div class="row text-center ">
+        <span class = 'col-12 flash'> <strong> {{ message }} </strong> </span>
+    </div>
+    {% endfor %}
+   {% endif %}
+{% endwith %}
+	<div class='details'>
+		<!-- Show Details Info -->
+		</label><h2>{{item.name}}</h2>
+		<span>{{item.description}}</span>
+		<p><label>Price:</label><span>{{item.price}}</span></p>
+		<!-- Control Button -->
+		<a class='btn btnBack' href={{url_for('editItem', category_id=item.category_id, item_id=item.id)}}><i class="fas fa-edit"> EDIT</i></a>
+		<a class='btn btnBack' href={{url_for('deleteItem', category_id=item.category_id, item_id=item.id)}}><i class="fas fa-trash-alt"> DELTEE</i></a>
+	</div>
+{% endblock %}

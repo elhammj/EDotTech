@@ -1,0 +1,19 @@
+<!-- 
+	Elham Jaffar
+	This file includes the style links/files for the project
+--> 
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" async>
+		<link rel="stylesheet" type=text/css href="{{ url_for('static', filename='styles.css') }}">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" crossorigin="anonymous">
+
+	</head>
+	<body>
+		<div class="container-fulid main">
+			{% block content %}
+			{% endblock %}
+		</div>
+	</body>
+</html>

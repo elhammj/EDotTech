@@ -1,0 +1,32 @@
+<!-- 
+	Elham Jaffar
+	Show all items for specific category
+-->
+{% extends "style.html" %}
+{% block content %}
+{% include "header.html" %}
+<!-- Flash -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+    <div class="row text-center ">
+        <span class = 'col-12 flash'> <strong> {{ message }} </strong> </span>
+    </div>
+    {% endfor %}
+   {% endif %}
+{% endwith %}
+	<div class='col-sm-12'>
+		<h4 class='subject'> All Items for {{category.name}} Category</h4>
+		<div>
+			<ul>
+				{% for i in items %}
+				<li><a href={{url_for('showDetails',category_id=i.category_id, item_id=i.id)}}>{{i.name}}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+	<div>
+		<!-- Control Button -->
+		<a class='btn btn-light' href={{url_for('addItem', category_id=category.id)}}><i class="fas fa-plus"> ADD</i></a>
+	</div>
+{% endblock %}

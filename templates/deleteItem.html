@@ -1,0 +1,13 @@
+<!-- 
+	Elham Jaffar
+	Delete Item Templates to delete a new item under a specific category
+-->
+{% extends "style.html" %}
+{% block content %}
+{% include "header.html" %}
+	<h4 class='deleteMsg'> Are you sure you want to delete {{item.name}}? </h4>
+	<form action='{{ url_for('deleteItem',category_id = item.category_id, item_id=item.id)}}' method='POST'>
+		<input class='btn btn-light' type='submit', value = 'Delete'>
+		<a class='btn btn-light' href = {{url_for('showItems', category_id=item.category_id)}}> Cancel </a>
+	</form>
+{% endblock %}
