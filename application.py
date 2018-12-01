@@ -228,9 +228,7 @@ def getUserID(email):
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
-    except Exception:
-        destfile_tmp.unlink()
-        raise
+    except:
         return None
 
 # end login and adding user section

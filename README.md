@@ -36,7 +36,7 @@ The application uses google login API.
 - Avaliable for both public users and registered users 
 2. **Items for a category**: run in `http://localhost:5000/<int:category_id>/items`
 - It shows all the items under a selected category
-- Avaliable for both public users and registered users 
+- Avaliable only for registered users
 3. **Item's Details**: run in `http://localhost:5000//<int:category_id>/items/<int:item_id>/`
 - It shows item's details
 - Avaliable only for registered users
@@ -57,10 +57,10 @@ The application uses google login API.
 `/catalog/JSON`
 - It has list of categories and its items.
 
-`categories/JSOM`
+`categories/JSON`
 - It has list of all catgeories. 
 
-`/category/<int:category_id>/items/JSON`
+`/categories/<int:category_id>/items/JSON`
 - It has list of items under a specific catalog.
 
 `/categories/<int:category_id>/items/<int:item_id>/JSON`
