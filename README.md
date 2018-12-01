@@ -10,7 +10,7 @@ Registered users will have the ability to post, edit and delete their own items.
 The application uses google login API. 
 
 ## To Run the application:
-### Download the following software/files:
+### Download the following software/files
 1. [Vagrant](https://www.vagrantup.com/)
 2. [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
 3. [Udacity Virtual Machine](https://github.com/udacity/fullstack-nanodegree-vm)
@@ -25,7 +25,7 @@ The application uses google login API.
 1. Create the database, run `python database_setup.py`
 2. Seed your database, run `python technologyLists.py`
 
-### Start the applciation
+### Start the application
 1. Run `python application.py`
 2. Access the app through [http://localhost:5000](http://localhost:5000)
 * You May change the port to 8000 in applciation.py in main funciton since the app works in 5000 and 8000
