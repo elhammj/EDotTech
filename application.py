@@ -17,6 +17,7 @@ from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 from flask import make_response
 from flask import session as login_session
+from functools import wraps
 
 # Instance, every time it runs create instance name
 app = Flask(__name__)
@@ -33,16 +34,15 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-'''
+
+@app.route('/login')
+def showLogin():
+    '''
     Login Section by third party google
     Create anti-forgery state token
     Login using google
     return: login.html file
-'''
-
-
-@app.route('/login')
-def showLogin():
+    '''
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
@@ -50,14 +50,12 @@ def showLogin():
     return render_template('login.html', STATE=state)
 
 
-'''
-    using post method to login using google
-    gconnect(): to connect and validate the token
-'''
-
-
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    '''
+    using post method to login using google
+    gconnect(): to connect and validate the token
+    '''
     # Validate state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -148,14 +146,12 @@ def gconnect():
     return output
 
 
-'''
-    gdisconnect(): check if the user is connected - log out
-    DISCONNECT - Revoke a current user's token and reset their login_session
-'''
-
-
 @app.route('/gdisconnect')
 def gdisconnect():
+    '''
+    gdisconnect(): check if the user is connected - log out
+    DISCONNECT - Revoke a current user's token and reset their login_session
+    '''
     access_token = login_session['access_token']
     print 'In gdisconnect access token is %s', access_token
     print 'User name is: '
@@ -189,14 +185,12 @@ def gdisconnect():
         return response
 
 
-'''
+def createUser(login_session):
+    '''
     User Helper Function
     Create a user in a databas, name, email, picture
     return: user's id
-'''
-
-
-def createUser(login_session):
+    '''
     newUser = User(name=login_session['username'], email=login_session[
                    'email'], picture=login_session['picture'])
     session.add(newUser)
@@ -205,46 +199,52 @@ def createUser(login_session):
     return user.id
 
 
-'''
+def getUserInfo(user_id):
+    '''
     User Helper Function
     get user object info by passing id
     return: user object
-'''
-
-
-def getUserInfo(user_id):
+    '''
     user = session.query(User).filter_by(id=user_id).one()
     return user
 
 
-'''
+def getUserID(email):
+    '''
     User Helper Function
     get user id by email
     return: user id or none if the user doesn't exist
-'''
-
-
-def getUserID(email):
+    '''
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
     except Exception:
         return None
 
+
+def login_required(f):
+    '''
+    A decorator is a function that wraps and replaces another function.
+    To Make sure user is logged in.
+    '''
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in login_session:
+            return redirect(url_for('showLogin'))
+        return f(*args, **kwargs)
+    return decorated_function
 # end login and adding user section
-
-
-'''
-    JSON Application: View items in json format
-    This part consists of 4 sections to show all
-    categories, all items, details of a
-    specific item and show all what we have in database
-'''
 
 
 @app.route('/catalog/JSON')
 # Show all categories and its items in JSON format
 def catalogJSON():
+    '''
+    JSON Application: View items in json format
+    This part consists of 4 sections to show all
+    categories, all items, details of a
+    specific item and show all what we have in database
+    '''
     categories = session.query(Category).all()
     categoryInJSON = [category.serialize for category in categories]
     for category in range(len(categoryInJSON)):
@@ -280,17 +280,15 @@ def itemDetailsJSON(category_id, item_id):
 # end JSON section
 
 
-'''
+@app.route('/')
+@app.route('/categories')
+def allCategoryAndItems():
+    '''
     Show all categories and its items in main page which has log out button
     return:
     -If the user logged in show main page
     -If not show the public main page which has login button
-'''
-
-
-@app.route('/')
-@app.route('/categories')
-def allCategoryAndItems():
+    '''
     if 'username' not in login_session:
         categories = session.query(Category).all()
         # Show Latest 5 Items
@@ -306,54 +304,43 @@ def allCategoryAndItems():
         return render_template('main.html', categories=categories, items=items)
 
 
-'''
+@app.route('/<int:category_id>/items')
+@login_required
+def showItems(category_id):
+    '''
     Show all item for a specific category
     return:
     -If the user logged in show all the items under selected category
     -If not redirect the user to login page
-'''
+    '''
+    category = session.query(Category).filter_by(id=category_id).one()
+    items = session.query(Items).filter_by(category_id=category_id).all()
+    return render_template('allItems.html', items=items, category=category)
 
 
-@app.route('/<int:category_id>/items')
-def showItems(category_id):
-    if 'username' not in login_session:
-        return redirect('/login')
-    else:
-        category = session.query(Category).filter_by(id=category_id).one()
-        items = session.query(Items).filter_by(category_id=category_id).all()
-        return render_template('allItems.html', items=items, category=category)
-
-
-'''
+@app.route('/<int:category_id>/items/<int:item_id>/')
+@login_required
+def showDetails(category_id, item_id):
+    '''
     Show all item'a details
     return:
     -If the user logged in show all the item's details
     -If not redirect the user to login page
-'''
+   '''
+    item = session.query(Items).filter_by(id=item_id).one()
+    return render_template('itemDetails.html', item=item)
 
 
-@app.route('/<int:category_id>/items/<int:item_id>/')
-def showDetails(category_id, item_id):
-    if 'username' not in login_session:
-        return redirect('/login')
-    else:
-        item = session.query(Items).filter_by(id=item_id).one()
-        return render_template('itemDetails.html', item=item)
-
-
-'''
+@app.route('/<int:category_id>/items/new/', methods=['GET', 'POST'])
+@login_required
+def addItem(category_id):
+    '''
     Add a new item
     return:
     -If the user logged in, it allows
     the user to add a new item to a specific category
     -If not redirect the user to login page
-'''
-
-
-@app.route('/<int:category_id>/items/new/', methods=['GET', 'POST'])
-def addItem(category_id):
-    if 'username' not in login_session:
-        return redirect('/login')
+    '''
     if request.method == 'POST':
         newItem = Items(name=request.form['name'],
                         description=request.form['description'],
@@ -368,21 +355,23 @@ def addItem(category_id):
         return render_template('addItem.html', category_id=category_id)
 
 
-'''
+@app.route('/<int:category_id>/items/<int:item_id>/edit/',
+           methods=['GET', 'POST'])
+def editItem(category_id, item_id):
+    '''
     Edit Item Details
     return:
     -If the user logged in, it allows the user to edit
     the fields if he/she is the owner that item or cancel
     -otherwise, it gives an alert message the
     the user cann't update the item
-'''
-
-
-@app.route('/<int:category_id>/items/<int:item_id>/edit/',
-           methods=['GET', 'POST'])
-def editItem(category_id, item_id):
+    '''
     editItem = session.query(Items).filter_by(id=item_id,
                                               category_id=category_id,).one()
+    if editItem.user_id != login_session['user_id']:
+            flash('You are not the author of this item, you can not update it')
+            return redirect(url_for('showDetails', category_id=category_id,
+                                    item_id=item_id))
     if request.method == 'POST':
         if (request.form['name'] and request.form['description'] and
            request.form['description']):
@@ -400,37 +389,31 @@ def editItem(category_id, item_id):
         return redirect(url_for('showDetails', category_id=category_id,
                                 item_id=item_id))
     else:
-        if editItem.user_id != login_session['user_id']:
-            flash('You are not the author of this item, you can not update it')
-            return redirect(url_for('showDetails', category_id=category_id,
-                                    item_id=item_id))
         return render_template('editItem.html', category_id=category_id,
                                item_id=item_id, item=editItem)
 
 
-'''
+@app.route('''/<int:category_id>/items/<int:item_id>/delete/''',
+           methods=['GET', 'POST'])
+def deleteItem(category_id, item_id):
+    '''
     Delete Item
     return:
     -If the user logged in, it allows the user to delete
     an item if he/she is the owner of that item or cancel
     -otherwise, it gives an alert message that
     the user cann't delete the item
-'''
-
-
-@app.route('''/<int:category_id>/items/<int:item_id>/delete/''',
-           methods=['GET', 'POST'])
-def deleteItem(category_id, item_id):
+    '''
     itemToDelete = session.query(Items).filter_by(id=item_id).one()
+    if itemToDelete.user_id != login_session['user_id']:
+        flash('You are not the author of this item, you can not delete it')
+        return redirect(url_for('showDetails',
+                                category_id=category_id, item_id=item_id))
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
         return redirect(url_for('showItems', category_id=category_id))
     else:
-        if itemToDelete.user_id != login_session['user_id']:
-            flash('You are not the author of this item, you can not delete it')
-            return redirect(url_for('showDetails',
-                                    category_id=category_id, item_id=item_id))
         return render_template('deleteItem.html', item=itemToDelete)
 
 
